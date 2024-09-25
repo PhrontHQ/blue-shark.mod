@@ -1,0 +1,14 @@
+{
+    "name": "file-upload-sample",
+    "version": "0.1.0",
+    "dependencies": {
+        "blue-shark": "*",
+        "mod": "*"
+    },
+        "mappings": {
+        "mod": "../../../node_modules/mod",
+        "blue-shark": "../../../"
+    }
+}
+
+

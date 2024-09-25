@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="radio-button-field-group.css">
+    <script type="text/mod-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "owner"}
+            }
+        },
+        "readOnlySubstitution": {
+            "prototype": "mod/ui/substitution.reel",
+            "properties": {
+                "element": {"#": "readOnlySubstitution"}
+            },
+            "bindings": {
+                "switchValue": {"<-": "!!@owner.isReadOnly ? 'ro' : 'rw'"}
+            }
+        },
+        "options": {
+            "prototype": "mod/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "options"}
+            },
+            "bindings": {
+                "content": {"<-": "@owner.options"}
+            }
+        },
+        "radioButtonController": {
+            "prototype": "mod/core/radio-button-controller",
+            "bindings": {
+                "content": {"<-": "@owner.options"},
+                "value": {"<->": "@owner.selectedValue"}
+            }
+        },
+        "option": {
+            "prototype": "./radio-button-field.reel",
+            "properties": {
+                "element": {"#": "option"},
+                "radioButtonController": {"@": "radioButtonController"}
+            },
+            "bindings": {
+                "label": {"<-": "@options:iteration.object.label || @options:iteration.object"},
+                "value": {"<-": "@options:iteration.object.value || @options:iteration.object"},
+                "disabled": {"<-": "@owner.disabled"}
+            }
+        },
+        "value": {
+            "prototype": "blue-shark/ui/text.reel",
+            "properties": {
+                "element": {"#": "value"}
+            },
+            "bindings": {
+                "value": {"<-": "(@owner.options && @owner.options.0 && @owner.options.0.label) ? @owner.options.filter{value == @owner.selectedValue}.0.label : @owner.selectedValue"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-mod-id="owner" class="RadioButtonFieldGroup">
+        <div data-mod-id="readOnlySubstitution">
+            <div data-mod-id="options" data-arg="rw" class="RadioButtonFieldGroup-options">
+                <div data-mod-id="option" class="RadioButtonFieldGroup-option"></div>
+            </div>
+            <div data-mod-id="value" data-arg="ro"></div>
+        </div>
+    </div>
+</body>
+</html>

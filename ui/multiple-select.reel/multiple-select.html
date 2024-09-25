@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="multiple-select.css">
+    <script type="text/mod-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "owner"},
+                "_inputField": {"@": "input"},
+                "optionsController": {"@": "optionsController"},
+                "_optionsList": {"@": "options"},
+                "valuesController": {"@": "valuesController"},
+                "scrollView": {"@": "valuesScroll"},
+                "valuesContainer": {"#": "valuesContainer"}
+            },
+            "bindings": {
+                "_inputErrorMessage": {"<-": "@owner.inputErrorMessage || 'The input is invalid'"},
+                "_optionsPrefix": {"<-": "@owner._typedValue || @input.value || ''"},
+                "_inputError": {"<-": "!!@owner.invalidValue && @owner.invalidValue == @input.value"},
+                "classList.has('is-disabled')": {"<-": "@owner.disabled"}
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "owner"}
+                },
+                {
+                    "type": "multipleOptionSelected",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+        "inputContainer": {
+            "prototype": "mod/ui/component",
+            "properties": {
+                "element": {"#": "inputContainer"},
+                "hasTemplate": false
+            },
+            "bindings": {
+                "classList.has('has-value')": {"<-": "@input.value"},
+                "classList.has('has-error')": {"<-": "@owner._inputError"}
+            }
+        },
+        "input": {
+            "prototype": "blue-shark/ui/text-field.reel",
+            "properties": {
+                "element": {"#": "input"}
+            },
+            "bindings": {
+                "placeholder": {"<-": "@owner.placeholder"},
+                "classList.has('has-options')": {"<-": "!!@owner.options && @owner.options.length > 0"},
+                "disabled": {"<-": "@owner.disabled"}
+            }
+        },
+        "inputErrorMessage": {
+            "prototype": "mod/ui/text.reel",
+            "properties": {
+                "element": {"#": "inputErrorMessage"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner._inputErrorMessage"}
+            }
+        },
+        "clearButton": {
+            "prototype": "blue-shark/ui/button.reel",
+            "properties": {
+                "element": {"#": "clearButton"},
+                "value": "clear"
+            }
+        },
+        "optionsController": {
+            "prototype": "mod/core/range-controller",
+            "bindings": {
+                "content": {"<-": "!!@owner.labelPath ? @owner.options.filter{path(@owner.labelPath).startsWith(@owner._optionsPrefix)} : @owner.options"}
+            }
+        },
+        "options": {
+            "prototype": "mod/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "options"},
+                "contentController": {"@": "optionsController"},
+                "isSelectionEnabled": true
+            }
+        },
+        "option": {
+            "prototype": "./multiple-select-option.reel",
+            "properties": {
+                "element": {"#": "option"}
+            },
+            "bindings": {
+                "option": {"<-": "@options:iteration.object"},
+                "selected": {"<->": "@owner._selectedOption"},
+                "labelPath": {"<-": "@owner.labelPath"}
+            }
+        },
+        "valuesController": {
+            "prototype": "mod/core/range-controller",
+            "bindings": {
+                "content": {"<->": "@owner.values"}
+            }
+        },
+        "values": {
+            "prototype": "mod/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "values"},
+                "contentController": {"@": "valuesController"}
+            }
+        },
+        "value": {
+            "prototype": "./multiple-select-value.reel",
+            "properties": {
+               "element": {"#": "value"},
+               "contentController": {"@": "valuesController"}
+            },
+            "bindings": {
+                "object": {"<-": "@values:iteration.object"},
+                "index": {"<-": "@values:iteration.index"},
+                "converter": {"<-": "@owner.converter"},
+                "labelPath": {"<-": "@owner.labelPath"},
+                "enabled": {"<-": "@owner.isDraggable"},
+                "errorMessage": {"<-": "@owner.valueErrorMessage || @owner._inputErrorMessage"}
+            }
+        },
+        "inputScroll": {
+            "prototype": "blue-shark/ui/scroller.reel",
+            "properties": {
+                "element": {"#": "inputScroll"},
+                "overflow": "scrollY"
+            },
+            "bindings": {
+                "classList.has('has-content')": {"<-": "@optionsController.content.length > 0"}
+            }
+        },
+        "valuesScroll": {
+            "prototype": "blue-shark/ui/scroller.reel",
+            "properties": {
+                "element": {"#": "valuesScroll"},
+                "overflow": "scrollY"
+            }
+        },
+        "addButton": {
+            "prototype": "blue-shark/ui/button.reel",
+            "properties": {
+                "element": {"#": "addButton"},
+                "value": "Add"
+            },
+            "bindings": {
+                "disabled": {"<-": "@owner.canAddNewEntry.defined() ? !@owner.canAddNewEntry : !@input.value"}
+            }
+        },
+        "inputTitle": {
+            "prototype": "mod/ui/text.reel",
+            "properties": {
+                "element": {"#": "inputTitle"}
+            },
+            "bindings": {
+                "value": {"<-": "!!@owner.inputTitle ? @owner.inputTitle : 'Add Item'"},
+                "classList.has('is-hidden')": {"<-": "@owner.hideTitle"}
+            }
+        },
+        "valuesEmptyState": {
+            "prototype": "mod/ui/text.reel",
+            "properties": {
+                "element": {"#": "valuesEmptyState"}
+            },
+            "bindings": {
+                "value": {"<-": "!!@owner.emptyMessage ? @owner.emptyMessage : 'no items added'"},
+                "classList.has('is-hidden')": {"<-": "@valuesController.content.length > 0"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-mod-id="owner" class="MultipleSelect">
+        <div class="MultipleSelect-input">
+            <div data-mod-id="inputTitle" class="MultipleSelect-title"></div>
+            <div class="MultipleSelect-input-controls">
+                <div data-param="*">
+                    <div data-mod-id="inputContainer" class="MultipleSelect-input-default">
+                        <button data-mod-id="clearButton" class="MultipleSelect-input-clearButton Button--naked Button--icon">
+                            <svg>
+                                <use xlink:href="#i-plus"/>
+                            </svg>
+                        </button>
+                        <div data-mod-id="input" class="MultipleSelect-input-field" spellcheck="false"></div>
+
+                        <div data-mod-id="inputScroll" class="MultipleSelect-input-options">
+                            <div data-mod-id="options">
+                                <div data-mod-id="option" class="MultipleSelect-input-option"></div>
+                            </div>
+                        </div>
+                        <div class="MultipleSelect-input-error">
+                            <div data-mod-id="inputErrorMessage" class="MultipleSelect-input-error-message"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="MultipleSelect-input-buttons">
+                    <div data-mod-id="addButton" class="Button--create MultipleSelect-input-add">
+                        <svg><use xlink:href="#i-plus"/></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="MultipleSelect-body">
+            <div data-mod-id="valuesContainer" class="MultipleSelect-valuesContainer">
+                <div data-mod-id="valuesEmptyState" class="MultipleSelect-values-emptyState"></div>
+                <div data-mod-id="valuesScroll">
+                    <div data-mod-id="values" class="MultipleSelect-values">
+                        <div data-mod-id="value"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

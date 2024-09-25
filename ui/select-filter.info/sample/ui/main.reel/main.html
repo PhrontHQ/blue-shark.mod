@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script type="text/mod-serialization">
+    {
+        "owner": {
+            "properties": {
+                "element": {"#": "owner"},
+                "options": [
+                    {"value": "true", "label": "true", "checked": true},
+                    {"value": "test", "label": "test", "checked": true},
+                    {"value": "another", "label": "another", "checked": true},
+                    {"value": "last option", "label": "last option", "checked": true}
+                ],
+                "selectedValue": "test"
+            }
+        },
+        "icons": {
+            "prototype": "blue-shark/ui/icons.reel",
+            "properties": {
+                "element": {"#": "icons"}
+            }
+        },
+        "filter": {
+            "prototype": "blue-shark/ui/select-filter.reel",
+            "properties": {
+                "element": {"#": "filter"}
+            },
+            "bindings": {
+                "options": {"<-": "@owner.options"}
+            }
+        },
+        "results": {
+            "prototype": "mod/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "results"}
+            },
+            "bindings": {
+                "content": {"<-": "@owner.options.filter{checked}"}
+            }
+        },
+        "result": {
+            "prototype": "mod/ui/text.reel",
+            "properties": {
+                "element": {"#": "result"}
+            },
+            "bindings": {
+                "value": {"<-": "@results:iteration.object.label"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-mod-id="owner" class="Main">
+        <!-- for example only -->
+        <div data-mod-id="icons" style="display: none;"></div>
+        <!-- end -->
+        <div class="container">
+            <h1>Select Filter</h1>
+            <div data-mod-id="filter"></div>
+            <h4>filter results:</h4>
+            <div data-mod-id="results">
+                <div data-mod-id="result"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
